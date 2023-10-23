@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { WrapperHeader } from './style'
+import { WrapperHeader, WrapperUploadFile } from './style'
 import { Button, Form, Space } from 'antd'
 import TableComponent from '../TableComponent/TableComponent'
 import InputCompunent from '../InputCompunent/InputCompunent'
@@ -24,19 +24,13 @@ export const AdminUser = () => {
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
 
-    const [stateUser, setStateUser] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        isAdmin: false,
-
-    })
-
     const [stateProductUserDetails, setStatetUserDetails] = useState({
         name: '',
         email: '',
         phone: '',
         isAdmin: false,
+        avatar: '',
+        address: '',
     })
 
     const [form] = Form.useForm();
@@ -99,7 +93,8 @@ export const AdminUser = () => {
                 email: res?.data?.email,
                 phone: res?.data?.phone,
                 isAdmin: res?.data?.isAdmin,
-
+                address: res?.data?.address,
+                avatar: res?.data?.avatar,
             })
         }
         setIsLoadingUpdate(false)
@@ -234,6 +229,12 @@ export const AdminUser = () => {
             ...getColumnSearchProps('email')
         },
         {
+            title: 'Address',
+            dataIndex: 'address',
+            sorter: (a, b) => a.address.length - b.address.length,
+            ...getColumnSearchProps('address')
+        },
+        {
             title: 'Admin',
             dataIndex: 'isAdmin',
             filters: [
@@ -328,17 +329,6 @@ export const AdminUser = () => {
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateUser({
-            ...stateUser,
-            image: file.preview
-        })
-    }
-
     const handleOnchangeAvatarDetails = async ({ fileList }) => {
         const file = fileList[0]
         if (!file.url && !file.preview) {
@@ -346,7 +336,7 @@ export const AdminUser = () => {
         }
         setStatetUserDetails({
             ...stateProductUserDetails,
-            image: file.preview
+            avatar: file.preview
         })
     }
 
@@ -405,15 +395,23 @@ export const AdminUser = () => {
                             <InputCompunent value={stateProductUserDetails.phone} onChange={handleOnchangeDetails} name="phone" />
                         </Form.Item>
 
-                        {/* <Form.Item
+                        <Form.Item
+                            label="Adress"
+                            name="address"
+                            rules={[{ required: true, message: 'Please input your address!' }]}
+                        >
+                            <InputCompunent value={stateProductUserDetails.address} onChange={handleOnchangeDetails} name="address" />
+                        </Form.Item>
+
+                        <Form.Item
                             label="Image"
                             name="image"
-                            rules={[{ required: true, message: 'Please input your count image!' }]}
+                            rules={[{ required: true, message: 'Please input your image!' }]}
                         >
                             <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
                                 <Button >Upload</Button>
-                                {stateProductDetails?.image && (
-                                    <img src={stateProductDetails?.image} style={{
+                                {stateProductUserDetails?.avatar && (
+                                    <img src={stateProductUserDetails?.avatar} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -422,7 +420,7 @@ export const AdminUser = () => {
                                     }} alt="avatar" />
                                 )}
                             </WrapperUploadFile>
-                        </Form.Item> */}
+                        </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">

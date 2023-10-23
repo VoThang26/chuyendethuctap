@@ -1,6 +1,6 @@
 import { Image } from 'antd';
 import React from 'react'
-import { WarpperSliderStyle } from './style';
+import { WrapperSliderStyle } from './style';
 
 const SliderComponent = ({ arrImages }) => {
     const settings = {
@@ -10,17 +10,16 @@ const SliderComponent = ({ arrImages }) => {
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 2000
+        autoplaySpeed: 1000
     };
     return (
-        <WarpperSliderStyle {...settings}>
+        <WrapperSliderStyle {...settings}>
             {arrImages.map((image) => {
                 return (
-                    <Image key={image} src={image} alt="slider" preview={false} width="100%" height="350px" />
+                    <Image key={image} src={image} alt="slider" preview={false} width="100%" height="274px" />
                 )
             })}
-        </WarpperSliderStyle>
-
+        </WrapperSliderStyle>
     )
 }
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { WrapperHeader, WrapperUploadFile } from './style'
-import { Button, Form, Space } from 'antd'
+import { Button, Form, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputCompunent from '../InputCompunent/InputCompunent'
-import { getBase64 } from '../../ultils'
+import { getBase64, renderOptions } from '../../ultils'
 import { useMutationHooks } from '../../hooks/useMutationHook'
 import * as ProductService from '../../services/ProductService'
 import { Loading } from '../LoadingComponent/Loading'
@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../ModalComponent/ModalComponent'
+
 
 
 
@@ -36,6 +37,7 @@ export const AdminProduct = () => {
         image: '',
         type: '',
         countInStock: '',
+        newType: '',
     })
 
     const [stateProductDetails, setStateProductDetails] = useState({
@@ -150,12 +152,21 @@ export const AdminProduct = () => {
             }
         })
     }
+
+    const fetchAllTypeProduct = async () => {
+        const res = await ProductService.getAllTypeProduct()
+        return res
+    }
+
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted } = mutationDeleted
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
-    console.log('dataUpdated', dataUpdated);
+
+
     const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
+    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
+
     const { isLoading: isLoadingProducts, data: products } = queryProduct
     const renderAction = () => {
         return (
@@ -165,6 +176,9 @@ export const AdminProduct = () => {
             </div>
         )
     }
+
+    console.log('type', typeProduct);
+
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         // setSearchText(selectedKeys[0]);
@@ -368,6 +382,8 @@ export const AdminProduct = () => {
         setIsModalOpenDelete(false)
     }
 
+
+
     const handleDeleteProduct = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
@@ -390,7 +406,16 @@ export const AdminProduct = () => {
         form.resetFields()
     };
     const onFinish = () => {
-        mutation.mutate(stateProduct, {
+        const params = {
+            name: stateProduct.name,
+            price: stateProduct.price,
+            description: stateProduct.description,
+            rating: stateProduct.rating,
+            image: stateProduct.image,
+            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
+            countInStock: stateProduct.countInStock,
+        }
+        mutation.mutate(params, {
             onSettled: () => {
                 queryProduct.refetch()
             }
@@ -443,6 +468,12 @@ export const AdminProduct = () => {
         })
 
     }
+    const handleChangeSelect = (value) => {
+        setStateProduct({
+            ...stateProduct,
+            type: value
+        })
+    }
 
     return (
         <div >
@@ -485,8 +516,25 @@ export const AdminProduct = () => {
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
-                            <InputCompunent value={stateProduct.type} onChange={handleOnchange} name="type" />
+                            {/* <InputCompunent value={stateProduct.type} onChange={handleOnchange} name="type" /> */}
+                            <Select
+                                name="type"
+                                // defaultValue="lucy"
+                                // style={{ width: 120 }}
+                                value={stateProduct.type}
+                                onChange={handleChangeSelect}
+                                options={renderOptions(typeProduct?.data?.data)}
+                            />
                         </Form.Item>
+                        {stateProduct.type === 'add_type' && (
+                            <Form.Item
+                                label='New type'
+                                name="newType"
+                                rules={[{ required: true, message: 'Please input your type!' }]}
+                            >
+                                <InputCompunent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
+                            </Form.Item>
+                        )}
                         <Form.Item
                             label="Count inStock"
                             name="countInStock"

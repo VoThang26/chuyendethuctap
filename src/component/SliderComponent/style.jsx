@@ -1,7 +1,7 @@
 import Slider from 'react-slick'
 import styled from "styled-components";
 
-export const WarpperSliderStyle = styled(Slider)`
+export const WrapperSliderStyle = styled(Slider)`
 & .slick-arrow.slick-prev {
     left:12px;
     top:50%;
