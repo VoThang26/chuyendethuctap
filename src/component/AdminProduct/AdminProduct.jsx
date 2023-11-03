@@ -14,9 +14,6 @@ import DrawerComponent from '../DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../ModalComponent/ModalComponent'
 
-
-
-
 export const AdminProduct = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -25,11 +22,8 @@ export const AdminProduct = () => {
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
     const user = useSelector((state) => state?.user)
 
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
-
-    const [stateProduct, setStateProduct] = useState({
+    const inittial = () => ({
         name: '',
         price: '',
         description: '',
@@ -38,17 +32,10 @@ export const AdminProduct = () => {
         type: '',
         countInStock: '',
         newType: '',
+        discount: '',
     })
-
-    const [stateProductDetails, setStateProductDetails] = useState({
-        name: '',
-        price: '',
-        description: '',
-        rating: '',
-        image: '',
-        type: '',
-        countInStock: '',
-    })
+    const [stateProduct, setStateProduct] = useState(inittial())
+    const [stateProductDetails, setStateProductDetails] = useState(inittial())
 
     const [form] = Form.useForm();
 
@@ -60,7 +47,8 @@ export const AdminProduct = () => {
                 rating,
                 image,
                 type,
-                countInStock } = data
+                countInStock,
+                discount } = data
             const res = ProductService.creatProduct({
                 name,
                 price,
@@ -69,6 +57,7 @@ export const AdminProduct = () => {
                 image,
                 type,
                 countInStock,
+                discount
 
             })
             return res
@@ -126,14 +115,19 @@ export const AdminProduct = () => {
                 image: res?.data?.image,
                 type: res?.data?.type,
                 countInStock: res?.data?.countInStock,
+                discount: res?.data?.discount,
             })
         }
         setIsLoadingUpdate(false)
     }
 
     useEffect(() => {
-        form.setFieldsValue(stateProductDetails)
-    }, [form, stateProductDetails])
+        if (!isModalOpen) {
+            form.setFieldsValue(stateProductDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateProductDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
@@ -374,6 +368,7 @@ export const AdminProduct = () => {
             image: '',
             type: '',
             countInStock: '',
+            discount: '',
         })
         form.resetFields()
     };
@@ -402,6 +397,7 @@ export const AdminProduct = () => {
             image: '',
             type: '',
             countInStock: '',
+            discount: '',
         })
         form.resetFields()
     };
@@ -414,6 +410,7 @@ export const AdminProduct = () => {
             image: stateProduct.image,
             type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
             countInStock: stateProduct.countInStock,
+            discount: stateProduct.discount,
         }
         mutation.mutate(params, {
             onSettled: () => {
@@ -557,6 +554,13 @@ export const AdminProduct = () => {
                             <InputCompunent value={stateProduct.rating} onChange={handleOnchange} name="rating" />
                         </Form.Item>
                         <Form.Item
+                            label="Discount"
+                            name="discount"
+                            rules={[{ required: true, message: 'Please input your Discount!' }]}
+                        >
+                            <InputCompunent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
+                        </Form.Item>
+                        <Form.Item
                             label="Description"
                             name="description"
                             rules={[{ required: true, message: 'Please input your count description!' }]}
@@ -637,6 +641,13 @@ export const AdminProduct = () => {
                             rules={[{ required: true, message: 'Please input your Rating!' }]}
                         >
                             <InputCompunent value={stateProductDetails.rating} onChange={handleOnchangeDetails} name="rating" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Discount"
+                            name="discount"
+                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
+                        >
+                            <InputCompunent value={stateProductDetails.discount} onChange={handleOnchangeDetails} name="discount" />
                         </Form.Item>
                         <Form.Item
                             label="Description"

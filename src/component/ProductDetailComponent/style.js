@@ -2,20 +2,21 @@ import { Col, Image, InputNumber } from "antd";
 import styled from "styled-components";
 
 export const WrapperStyleImageSmall = styled(Image)`
-  height: 10px;
-  width: 10px;
+  height: 64px;
+  width: 64px;
 `;
 
 export const WrapperStyleColImage = styled(Col)`
   flex-basis: unset;
+  display: flex;
 `;
 
 export const WrapperStyleNameProduct = styled.h1`
-  color: rbg(36, 36, 36);
+  color: rgb(36, 36, 36);
   font-size: 24px;
   font-weight: 300;
   line-height: 32px;
-  word-break: breal-word;
+  word-break: break-word;
 `;
 
 export const WrapperStyleTextSell = styled.span`
@@ -33,22 +34,21 @@ export const WrapperPriceTextProduct = styled.h1`
   font-size: 32px;
   line-height: 40px;
   margin-right: 8px;
-  margin-top: 10px;
   font-weight: 500;
   padding: 10px;
+  margin-top: 10px;
 `;
 
 export const WrapperAddressProduct = styled.div`
   span.address {
     text-decoration: underline;
     font-size: 15px;
-    line-height: 40px;
-    margin-right: 8px;
-    margin-top: 10px;
+    line-height: 24px;
     font-weight: 500;
-    padding: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsisl;
   }
-  ,
   span.change-address {
     color: rgb(11, 116, 229);
     font-size: 16px;
@@ -57,21 +57,21 @@ export const WrapperAddressProduct = styled.div`
   }
 `;
 
-export const WrapperQalityProduct = styled.div`
+export const WrapperQualityProduct = styled.div`
   display: flex;
   gap: 4px;
   align-items: center;
-  width: 100px;
+  width: 120px;
   border: 1px solid #ccc;
   border-radius: 4px;
 `;
 
 export const WrapperInputNumber = styled(InputNumber)`
   &.ant-input-number.ant-input-number-sm {
-    width: 60px;
+    width: 40px;
     border-top: none;
     border-bottom: none;
-    &.ant-input-number-handler-wrap {
+    .ant-input-number-handler-wrap {
       display: none !important;
     }
   }
